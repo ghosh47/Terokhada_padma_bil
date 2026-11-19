@@ -1,0 +1,608 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Padda Bil</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link
+    href="https://fonts.googleapis.com/css2?family=DM+Sans:ital,opsz,wght@0,9..40,400;0,9..40,500;0,9..40,700;1,9..40,400&display=swap"
+    rel="stylesheet" />
+  <style>
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+    }
+
+    html,
+    body {
+      width: 100%;
+      background-color: #000000;
+      color: #FFFFFF;
+      font-family: 'DM Sans', sans-serif;
+      -webkit-font-smoothing: antialiased;
+      -moz-osx-font-smoothing: grayscale;
+    }
+
+    /* Section 1: Hero Banner */
+    .banner {
+      width: 100%;
+      aspect-ratio: 16 / 9;
+      max-width: 1440px;
+      margin: 0 auto;
+      background-color: #000000;
+      padding: 5.5% 6.6%;
+      display: flex;
+      flex-direction: column;
+      justify-content: flex-start;
+      position: relative;
+    }
+
+    /* Header Navigation */
+    .navbar {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      width: 100%;
+    }
+
+    .logo {
+      font-size: clamp(18px, 1.8vw, 26px);
+      font-weight: 700;
+      letter-spacing: -0.02em;
+      color: #FFFFFF;
+      text-decoration: none;
+    }
+
+    /* Glass Bar */
+    .glass-bar {
+      display: flex;
+      align-items: center;
+      gap: clamp(18px, 2.2vw, 30px);
+      padding: clamp(8px, 0.8vw, 12px) clamp(18px, 1.9vw, 26px);
+      border-radius: 9999px;
+      background: rgba(255, 255, 255, 0.08);
+      backdrop-filter: blur(14px);
+      -webkit-backdrop-filter: blur(14px);
+      border: 1px solid rgba(255, 255, 255, 0.2);
+      box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.18);
+    }
+
+    .nav-links {
+      display: flex;
+      align-items: center;
+      gap: clamp(18px, 2.4vw, 34px);
+      list-style: none;
+    }
+
+    .nav-links a {
+      color: #FFFFFF;
+      text-decoration: none;
+      font-size: clamp(12px, 1.1vw, 16px);
+      font-weight: 400;
+      transition: opacity 0.2s ease;
+    }
+
+    .nav-links a:hover {
+      opacity: 0.75;
+    }
+
+    .glass-divider {
+      width: 1px;
+      height: clamp(14px, 1.3vw, 18px);
+      background-color: rgba(255, 255, 255, 0.22);
+    }
+
+    .social-icons {
+      display: flex;
+      align-items: center;
+      gap: clamp(12px, 1.4vw, 18px);
+    }
+
+    .social-icons a {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      color: #FFFFFF;
+      transition: opacity 0.2s ease;
+    }
+
+    .social-icons a:hover {
+      opacity: 0.75;
+    }
+
+    .social-icons svg {
+      width: clamp(14px, 1.3vw, 18px);
+      height: clamp(14px, 1.3vw, 18px);
+      display: block;
+    }
+
+    /* Hero Content */
+    .hero {
+      margin-top: 17.5%;
+      max-width: 52%;
+      display: flex;
+      flex-direction: column;
+      align-items: flex-start;
+    }
+
+    .headline {
+      font-size: clamp(32px, 5vw, 72px);
+      font-weight: 700;
+      line-height: 1.08;
+      letter-spacing: -0.025em;
+      color: #FFFFFF;
+      margin-bottom: 16px;
+    }
+
+    .subheadline {
+      font-size: clamp(13px, 1.35vw, 19px);
+      font-weight: 400;
+      line-height: 1.45;
+      color: #FFFFFF;
+      margin-bottom: 28px;
+    }
+
+    .cta-btn {
+      display: inline-flex;
+      align-items: center;
+      gap: 10px;
+      background-color: #FFFFFF;
+      color: #000000;
+      text-decoration: none;
+      font-family: 'DM Sans', sans-serif;
+      font-size: clamp(12px, 1.05vw, 15px);
+      font-weight: 500;
+      padding: clamp(10px, 1.05vw, 15px) clamp(18px, 1.8vw, 26px);
+      border-radius: 9999px;
+      border: none;
+      transition: opacity 0.2s ease;
+    }
+
+    .cta-btn:hover {
+      opacity: 0.9;
+    }
+
+    .cta-btn svg {
+      width: 15px;
+      height: 15px;
+      stroke: #000000;
+    }
+
+    /* Section 2: Full-Width Pitch-Black Section (Right-Half Aligned Content) */
+    .split-section-wrapper {
+      width: 100%;
+      background-color: #000000;
+    }
+
+    .split-section {
+      width: 100%;
+      max-width: 1440px;
+      margin: 0 auto;
+      background-color: #000000;
+      padding: 4% 6.6% 6.5%;
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      align-items: center;
+      gap: clamp(32px, 5vw, 72px);
+    }
+
+    .split-left-blank {
+      width: 100%;
+      aspect-ratio: 4 / 4.8;
+    }
+
+    .split-content {
+      display: flex;
+      flex-direction: column;
+      align-items: flex-start;
+      max-width: 520px;
+    }
+
+    .split-headline {
+      font-size: clamp(28px, 3.6vw, 52px);
+      font-weight: 700;
+      line-height: 1.1;
+      letter-spacing: -0.025em;
+      color: #FFFFFF;
+      margin-bottom: 18px;
+    }
+
+    .split-subheadline {
+      font-size: clamp(14px, 1.25vw, 18px);
+      font-weight: 400;
+      line-height: 1.5;
+      color: #FFFFFF;
+      margin-bottom: 30px;
+    }
+
+    .outline-pill-btn {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      padding: clamp(10px, 1vw, 13px) clamp(20px, 1.8vw, 26px);
+      border-radius: 9999px;
+      border: 1px solid rgba(255, 255, 255, 0.35);
+      background-color: transparent;
+      color: #FFFFFF;
+      text-decoration: none;
+      font-family: 'DM Sans', sans-serif;
+      font-size: clamp(12px, 1.05vw, 15px);
+      font-weight: 500;
+      transition: background-color 0.2s ease, border-color 0.2s ease;
+    }
+
+    .outline-pill-btn:hover {
+      background-color: rgba(255, 255, 255, 0.08);
+      border-color: rgba(255, 255, 255, 0.65);
+    }
+
+    /* Section 3: The Voyage (Floating Middle-Right Typography) */
+    .voyage-wrapper {
+      width: 100%;
+      background-color: #000000;
+    }
+
+    .voyage-section {
+      width: 100%;
+      min-height: 100vh;
+      max-width: 1440px;
+      margin: 0 auto;
+      padding: 6% 6.6%;
+      display: flex;
+      align-items: center;
+      justify-content: flex-end;
+    }
+
+    .voyage-content {
+      display: flex;
+      flex-direction: column;
+      align-items: flex-start;
+      max-width: 400px;
+      width: 100%;
+      background: transparent;
+      border: none;
+      text-shadow: 0 4px 24px rgba(0, 0, 0, 0.9);
+    }
+
+    .voyage-eyebrow {
+      font-size: clamp(11px, 0.85vw, 12px);
+      font-weight: 500;
+      text-transform: uppercase;
+      letter-spacing: 0.15em;
+      color: rgba(255, 255, 255, 0.7);
+      margin-bottom: 14px;
+    }
+
+    .voyage-headline {
+      font-size: clamp(28px, 3.1vw, 44px);
+      font-weight: 700;
+      line-height: 1.1;
+      letter-spacing: -0.025em;
+      color: #FFFFFF;
+      margin-bottom: 16px;
+    }
+
+    .voyage-subheadline {
+      font-size: 14px;
+      font-weight: 400;
+      line-height: 1.55;
+      color: rgba(255, 255, 255, 0.85);
+      max-width: 360px;
+      margin-bottom: 24px;
+    }
+
+    .voyage-cta {
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      font-size: clamp(13px, 1.05vw, 15px);
+      font-weight: 500;
+      color: #FFFFFF;
+      text-decoration: none;
+      transition: opacity 0.2s ease;
+    }
+
+    .voyage-cta span {
+      display: inline-block;
+      transition: transform 0.2s ease;
+    }
+
+    .voyage-cta:hover {
+      opacity: 0.8;
+    }
+
+    .voyage-cta:hover span {
+      transform: translateX(4px);
+    }
+
+    /* Section 4: Plan Your Visit (Upper-Left Void) + Minimalist Footer */
+    .visit-wrapper {
+      width: 100%;
+      background-color: #000000;
+    }
+
+    .visit-section {
+      position: relative;
+      width: 100%;
+      min-height: 100vh;
+      max-width: 1440px;
+      margin: 0 auto;
+      background-color: #000000;
+    }
+
+    .visit-content {
+      position: absolute;
+      top: 22%;
+      left: 7%;
+      max-width: 480px;
+      width: calc(100% - 14%);
+      display: flex;
+      flex-direction: column;
+      align-items: flex-start;
+    }
+
+    .visit-eyebrow {
+      font-size: clamp(11px, 0.85vw, 12px);
+      font-weight: 500;
+      text-transform: uppercase;
+      letter-spacing: 0.15em;
+      color: rgba(255, 255, 255, 0.7);
+      margin-bottom: 14px;
+    }
+
+    .visit-headline {
+      font-size: clamp(30px, 3.6vw, 52px);
+      font-weight: 700;
+      line-height: 1.08;
+      letter-spacing: -0.025em;
+      color: #FFFFFF;
+      margin-bottom: 16px;
+    }
+
+    .visit-subheadline {
+      font-size: clamp(14px, 1.15vw, 16px);
+      font-weight: 400;
+      line-height: 1.55;
+      color: rgba(255, 255, 255, 0.85);
+      margin-bottom: 28px;
+    }
+
+    .visit-actions {
+      display: flex;
+      flex-wrap: wrap;
+      align-items: center;
+      gap: 12px;
+    }
+
+    .visit-btn-primary {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      gap: 6px;
+      background-color: #FFFFFF;
+      color: #000000;
+      text-decoration: none;
+      font-family: 'DM Sans', sans-serif;
+      font-size: clamp(13px, 1.05vw, 15px);
+      font-weight: 700;
+      padding: clamp(11px, 1.05vw, 14px) clamp(20px, 1.8vw, 26px);
+      border-radius: 9999px;
+      border: 1px solid #FFFFFF;
+      transition: opacity 0.2s ease;
+    }
+
+    .visit-btn-primary:hover {
+      opacity: 0.9;
+    }
+
+    .visit-btn-secondary {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      background-color: transparent;
+      color: #FFFFFF;
+      text-decoration: none;
+      font-family: 'DM Sans', sans-serif;
+      font-size: clamp(13px, 1.05vw, 15px);
+      font-weight: 500;
+      padding: clamp(11px, 1.05vw, 14px) clamp(20px, 1.8vw, 26px);
+      border-radius: 9999px;
+      border: 1px solid rgba(255, 255, 255, 0.32);
+      transition: background-color 0.2s ease, border-color 0.2s ease;
+    }
+
+    .visit-btn-secondary:hover {
+      background-color: rgba(255, 255, 255, 0.08);
+      border-color: rgba(255, 255, 255, 0.65);
+    }
+
+    .visit-footer {
+      position: absolute;
+      bottom: 0;
+      left: 7%;
+      right: 7%;
+      padding: 20px 0;
+      border-top: 1px solid rgba(255, 255, 255, 0.14);
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 16px;
+      font-size: clamp(12px, 0.9vw, 13px);
+      font-weight: 400;
+      color: rgba(255, 255, 255, 0.72);
+    }
+
+    /* Responsive stacking for smaller screens */
+    @media (max-width: 820px) {
+      .banner {
+        aspect-ratio: auto;
+        padding: 32px 24px 64px;
+      }
+
+      .hero {
+        margin-top: 64px;
+        max-width: 100%;
+      }
+
+      .split-section {
+        grid-template-columns: 1fr;
+        padding: 32px 24px 64px;
+        gap: 36px;
+      }
+
+      .split-left-blank {
+        display: none;
+      }
+
+      .split-content {
+        max-width: 100%;
+      }
+
+      .desktop-br {
+        display: none;
+      }
+
+      .voyage-section {
+        min-height: 75vh;
+        padding: 48px 24px;
+        justify-content: flex-start;
+      }
+
+      .visit-section {
+        min-height: 75vh;
+        padding: 64px 24px 24px;
+        display: flex;
+        flex-direction: column;
+        justify-content: space-between;
+        gap: 64px;
+      }
+
+      .visit-content {
+        position: static;
+        width: 100%;
+      }
+
+      .visit-footer {
+        position: static;
+        flex-wrap: wrap;
+      }
+    }
+  </style>
+</head>
+
+<body>
+  <!-- Section 1 -->
+  <section class="banner">
+    <header class="navbar">
+      <a href="#" class="logo">Padda Bil</a>
+      <nav class="glass-bar" aria-label="Primary Navigation">
+        <ul class="nav-links">
+          <li><a href="#">Sanctuary</a></li>
+          <li><a href="#">Boat Rides</a></li>
+          <li><a href="#">Visit</a></li>
+        </ul>
+        <span class="glass-divider" aria-hidden="true"></span>
+        <div class="social-icons">
+          <!-- Instagram -->
+          <a href="https://www.instagram.com/shuvro_tp?bqrl=Y2FzbHZ2M3hwOHJ6" target="_blank" rel="noopener noreferrer" aria-label="Instagram">
+            <svg viewBox="0 0 24 24" fill="none" stroke="#FFFFFF" stroke-width="1.8" stroke-linecap="round"
+              stroke-linejoin="round">
+              <rect x="2" y="2" width="20" height="20" rx="5" ry="5"></rect>
+              <circle cx="12" cy="12" r="4.2"></circle>
+              <circle cx="17.5" cy="6.5" r="1" fill="#FFFFFF" stroke="none"></circle>
+            </svg>
+          </a>
+          <!-- X / Twitter -->
+          <a href="https://x.com/Shuvro_47" target="_blank" rel="noopener noreferrer" aria-label="X (Twitter)">
+            <svg viewBox="0 0 24 24" fill="#FFFFFF">
+              <path
+                d="M18.244 2.25h3.308l-7.227 8.26 8.502 11.24H16.17l-5.214-6.817L4.99 21.75H1.68l7.73-8.835L1.254 2.25H8.08l4.713 6.231zm-1.161 17.52h1.833L7.084 4.126H5.117z" />
+            </svg>
+          </a>
+          <!-- Facebook -->
+          <a href="https://www.facebook.com/share/14xpnimMqSr/" target="_blank" rel="noopener noreferrer" aria-label="Facebook">
+            <svg viewBox="0 0 24 24" fill="#FFFFFF">
+              <path
+                d="M12 2C6.477 2 2 6.477 2 12c0 4.991 3.657 9.128 8.438 9.879V14.89h-2.54V12h2.54V9.797c0-2.506 1.492-3.89 3.777-3.89 1.094 0 2.238.195 2.238.195v2.46h-1.26c-1.243 0-1.63.771-1.63 1.562V12h2.773l-.443 2.89h-2.33v6.989C18.343 21.129 22 16.99 22 12c0-5.523-4.477-10-10-10z" />
+            </svg>
+          </a>
+        </div>
+      </nav>
+    </header>
+
+    <div class="hero">
+      <h1 class="headline">Drift Into Padda Bil</h1>
+
+      <p class="subheadline">
+        Guided by local boatmen through Terokhada’s untouched lotus waters—built for quiet mornings, drifting wooden
+        noukas, and dawn stories worth keeping.
+      </p>
+
+      <a href="#" class="cta-btn">
+        Explore the Bil
+        <svg viewBox="0 0 24 24" fill="none" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+          <line x1="5" y1="12" x2="19" y2="12"></line>
+          <polyline points="12 5 19 12 12 19"></polyline>
+        </svg>
+      </a>
+    </div>
+  </section>
+
+  <!-- Section 2 -->
+  <div class="split-section-wrapper">
+    <section class="split-section">
+      <div class="split-left-blank" aria-hidden="true"></div>
+
+      <div class="split-content">
+        <h2 class="split-headline">Awaken with the<br />blooming waters.</h2>
+        <p class="split-subheadline">
+          From dawn mist to endless pink lotuses.<br class="desktop-br" />
+          Discover Terokhada’s hidden wetland sanctuary.
+        </p>
+        <a href="#" class="outline-pill-btn">Explore the sanctuary</a>
+      </div>
+    </section>
+  </div>
+
+  <!-- Section 3: The Voyage -->
+  <div class="voyage-wrapper">
+    <section class="voyage-section">
+      <div class="voyage-content">
+        <span class="voyage-eyebrow">THE VOYAGE</span>
+        <h2 class="voyage-headline">Silent trails through<br />living water.</h2>
+        <p class="voyage-subheadline">
+          Hand-carved wooden noukas guided by weathered bamboo poles—parting the lotus beds without a sound.
+        </p>
+        <a href="#" class="voyage-cta">Explore the route <span aria-hidden="true">→</span></a>
+      </div>
+    </section>
+  </div>
+
+  <!-- Section 4: Plan Your Visit & Minimalist Footer -->
+  <div class="visit-wrapper">
+    <section class="visit-section">
+      <div class="visit-content">
+        <span class="visit-eyebrow"></span>
+        <h2 class="visit-headline">Your morning on<br />Padda Bil awaits.</h2>
+        <p class="visit-subheadline">
+          Terokhada, Khulna • Best experienced between 5:30 AM and 8:30 AM from August to October.
+        </p>
+        <div class="visit-actions">
+          <a href="#" class="visit-btn-primary">Get Directions <span aria-hidden="true">→</span></a>
+          <a href="#" class="visit-btn-secondary">Visitor Guide</a>
+        </div>
+      </div>
+
+      <footer class="visit-footer">
+        <span>Padda Bil • Terokhada, Khulna</span>
+        <span>© Copyright reserved to Shuvro Ghosh</span>
+      </footer>
+    </section>
+  </div>
+</body>
+
+</html>
