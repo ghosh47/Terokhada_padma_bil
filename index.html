@@ -1,0 +1,1186 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Padda Bil — 3D Macro Scroll Experience</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link
+    href="https://fonts.googleapis.com/css2?family=DM+Sans:ital,opsz,wght@0,9..40,400;0,9..40,500;0,9..40,700;1,9..40,400&display=swap"
+    rel="stylesheet"
+  />
+  <style>
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+    }
+
+    html {
+      width: 100%;
+      background-color: #000000;
+      color: #FFFFFF;
+      font-family: 'DM Sans', sans-serif;
+      -webkit-font-smoothing: antialiased;
+      -moz-osx-font-smoothing: grayscale;
+      overflow-x: hidden;
+      overflow-y: scroll;
+    }
+
+    body {
+      width: 100%;
+      background-color: #000000;
+      color: #FFFFFF;
+      overflow-x: hidden;
+      position: relative;
+    }
+
+    /* Minimalist Dark Scrollbar */
+    ::-webkit-scrollbar {
+      width: 5px;
+    }
+    ::-webkit-scrollbar-track {
+      background: #000000;
+    }
+    ::-webkit-scrollbar-thumb {
+      background: #252525;
+      border-radius: 3px;
+    }
+    ::-webkit-scrollbar-thumb:hover {
+      background: #444444;
+    }
+
+    /* Fixed Background Canvas */
+    #sequence-canvas {
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100vw;
+      height: 100vh;
+      display: block;
+      z-index: 0;
+      pointer-events: none;
+      background-color: #000000;
+    }
+
+    /* Ambient Cursor Glow (Bioluminescent Pond Lighting) */
+    #cursor-glow {
+      position: fixed;
+      inset: 0;
+      width: 100vw;
+      height: 100vh;
+      pointer-events: none;
+      z-index: 1;
+      transition: opacity 0.5s ease;
+    }
+
+    /* Scroll Height Driver (Controls playback length) */
+    #scroll-track {
+      position: relative;
+      width: 100%;
+      height: 6500px;
+      z-index: 0;
+    }
+
+    /* Fixed Top Navigation Bar */
+    .navbar {
+      position: fixed;
+      top: 0;
+      left: 0;
+      right: 0;
+      width: 100%;
+      max-width: 1440px;
+      margin: 0 auto;
+      padding: clamp(20px, 2.5vw, 36px) clamp(20px, 6.6vw, 95px);
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      z-index: 100;
+      pointer-events: none;
+    }
+
+    .navbar > * {
+      pointer-events: auto;
+    }
+
+    .logo {
+      font-size: clamp(18px, 1.8vw, 26px);
+      font-weight: 700;
+      letter-spacing: -0.02em;
+      color: #FFFFFF;
+      text-decoration: none;
+      text-shadow: 0 2px 18px rgba(0, 0, 0, 0.9);
+      transition: opacity 0.2s ease, transform 0.2s ease;
+    }
+
+    .logo:hover {
+      opacity: 0.85;
+      transform: translateY(-1px);
+    }
+
+    /* Frosted Glass Navigation Pill */
+    .glass-bar {
+      display: flex;
+      align-items: center;
+      gap: clamp(18px, 2.2vw, 30px);
+      padding: clamp(8px, 0.8vw, 12px) clamp(18px, 1.9vw, 26px);
+      border-radius: 9999px;
+      background: rgba(10, 10, 10, 0.45);
+      backdrop-filter: blur(20px);
+      -webkit-backdrop-filter: blur(20px);
+      border: 1px solid rgba(255, 255, 255, 0.16);
+      box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.2), 0 12px 36px rgba(0, 0, 0, 0.6);
+      transition: border-color 0.3s ease, box-shadow 0.3s ease;
+    }
+
+    .glass-bar:hover {
+      border-color: rgba(255, 255, 255, 0.3);
+      box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.25), 0 16px 42px rgba(0, 0, 0, 0.8);
+    }
+
+    .nav-links {
+      display: flex;
+      align-items: center;
+      gap: clamp(18px, 2.4vw, 34px);
+      list-style: none;
+    }
+
+    .nav-links a {
+      color: rgba(255, 255, 255, 0.85);
+      text-decoration: none;
+      font-size: clamp(12px, 1.1vw, 15px);
+      font-weight: 400;
+      transition: color 0.2s ease, transform 0.2s ease;
+      position: relative;
+    }
+
+    .nav-links a:hover {
+      color: #FFFFFF;
+      transform: translateY(-1px);
+    }
+
+    .glass-divider {
+      width: 1px;
+      height: clamp(14px, 1.3vw, 18px);
+      background-color: rgba(255, 255, 255, 0.2);
+    }
+
+    .social-icons {
+      display: flex;
+      align-items: center;
+      gap: clamp(12px, 1.4vw, 18px);
+    }
+
+    .social-icons a {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      color: rgba(255, 255, 255, 0.8);
+      transition: color 0.2s ease, transform 0.2s ease;
+    }
+
+    .social-icons a:hover {
+      color: #FFFFFF;
+      transform: translateY(-1px) scale(1.1);
+    }
+
+    .social-icons svg {
+      width: clamp(14px, 1.3vw, 18px);
+      height: clamp(14px, 1.3vw, 18px);
+      display: block;
+    }
+
+    /* Minimalist Side HUD (Scene Navigator) */
+    .side-hud {
+      position: fixed;
+      right: clamp(16px, 2.5vw, 40px);
+      top: 50%;
+      transform: translateY(-50%);
+      display: flex;
+      flex-direction: column;
+      gap: 18px;
+      z-index: 90;
+      pointer-events: auto;
+    }
+
+    .hud-item {
+      display: flex;
+      align-items: center;
+      justify-content: flex-end;
+      gap: 12px;
+      background: none;
+      border: none;
+      cursor: pointer;
+      padding: 6px;
+      color: rgba(255, 255, 255, 0.4);
+      font-family: 'DM Sans', sans-serif;
+      font-size: 11px;
+      font-weight: 500;
+      letter-spacing: 0.12em;
+      text-transform: uppercase;
+      transition: all 0.3s cubic-bezier(0.16, 1, 0.3, 1);
+    }
+
+    .hud-label {
+      opacity: 0;
+      transform: translateX(10px);
+      transition: all 0.3s cubic-bezier(0.16, 1, 0.3, 1);
+      pointer-events: none;
+      text-shadow: 0 2px 10px rgba(0, 0, 0, 0.9);
+    }
+
+    .hud-dot {
+      width: 5px;
+      height: 5px;
+      border-radius: 50%;
+      background-color: rgba(255, 255, 255, 0.3);
+      transition: all 0.3s cubic-bezier(0.16, 1, 0.3, 1);
+    }
+
+    .hud-item:hover .hud-label,
+    .hud-item.active .hud-label {
+      opacity: 1;
+      transform: translateX(0);
+      color: #FFFFFF;
+    }
+
+    .hud-item.active .hud-dot {
+      background-color: #f472b6;
+      box-shadow: 0 0 12px #f472b6, 0 0 24px rgba(244, 114, 182, 0.6);
+      transform: scale(1.7);
+    }
+
+    .hud-item:hover .hud-dot {
+      background-color: #FFFFFF;
+      transform: scale(1.4);
+    }
+
+    /* Fixed Stage Sections Container */
+    .stages-container {
+      position: fixed;
+      inset: 0;
+      width: 100vw;
+      height: 100vh;
+      pointer-events: none;
+      z-index: 10;
+      overflow: hidden;
+    }
+
+    .stage-section {
+      position: absolute;
+      inset: 0;
+      width: 100%;
+      height: 100%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      opacity: 0;
+      visibility: hidden;
+      will-change: transform, opacity;
+      pointer-events: none;
+      transition: opacity 0.4s ease, transform 0.4s ease, visibility 0.4s;
+    }
+
+    .stage-section.active {
+      opacity: 1;
+      visibility: visible;
+      pointer-events: auto;
+    }
+
+    .stage-inner {
+      width: 100%;
+      max-width: 1440px;
+      margin: 0 auto;
+      padding: clamp(90px, 12vh, 140px) clamp(20px, 6.6vw, 95px);
+      position: relative;
+    }
+
+    /* Section 1: Hero Banner */
+    .hero-stage .stage-inner {
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+      height: 100%;
+    }
+
+    .hero {
+      max-width: 54%;
+      display: flex;
+      flex-direction: column;
+      align-items: flex-start;
+      text-shadow: 0 4px 30px rgba(0, 0, 0, 0.95);
+    }
+
+    .headline {
+      font-size: clamp(34px, 5.2vw, 76px);
+      font-weight: 700;
+      line-height: 1.06;
+      letter-spacing: -0.03em;
+      color: #FFFFFF;
+      margin-bottom: 20px;
+    }
+
+    .subheadline {
+      font-size: clamp(14px, 1.35vw, 19px);
+      font-weight: 400;
+      line-height: 1.5;
+      color: rgba(255, 255, 255, 0.88);
+      margin-bottom: 34px;
+      max-width: 520px;
+    }
+
+    /* Shimmering CTA Button */
+    .cta-btn {
+      position: relative;
+      display: inline-flex;
+      align-items: center;
+      gap: 12px;
+      background-color: #FFFFFF;
+      color: #000000;
+      text-decoration: none;
+      font-family: 'DM Sans', sans-serif;
+      font-size: clamp(13px, 1.05vw, 15px);
+      font-weight: 700;
+      padding: clamp(12px, 1.1vw, 16px) clamp(22px, 1.9vw, 30px);
+      border-radius: 9999px;
+      border: none;
+      cursor: pointer;
+      overflow: hidden;
+      box-shadow: 0 6px 24px rgba(0, 0, 0, 0.5), 0 0 30px rgba(255, 255, 255, 0.15);
+      transition: transform 0.25s cubic-bezier(0.16, 1, 0.3, 1), box-shadow 0.25s ease;
+    }
+
+    .cta-btn::after {
+      content: '';
+      position: absolute;
+      top: -50%;
+      left: -60%;
+      width: 40%;
+      height: 200%;
+      background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.6), transparent);
+      transform: rotate(25deg);
+    }
+
+    .cta-btn:hover {
+      transform: translateY(-3px) scale(1.02);
+      box-shadow: 0 12px 36px rgba(0, 0, 0, 0.7), 0 0 40px rgba(255, 255, 255, 0.35);
+    }
+
+    .cta-btn:hover::after {
+      left: 150%;
+      transition: left 0.75s ease-in-out;
+    }
+
+    .cta-btn svg {
+      width: 15px;
+      height: 15px;
+      stroke: #000000;
+      transition: transform 0.2s ease;
+    }
+
+    .cta-btn:hover svg {
+      transform: translateX(3px);
+    }
+
+    /* Animated Scroll Hint Indicator */
+    .scroll-hint {
+      position: absolute;
+      bottom: clamp(24px, 4vh, 48px);
+      left: clamp(20px, 6.6vw, 95px);
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      color: rgba(255, 255, 255, 0.5);
+      font-size: 12px;
+      letter-spacing: 0.1em;
+      text-transform: uppercase;
+      transition: opacity 0.4s ease;
+      pointer-events: none;
+    }
+
+    .scroll-mouse {
+      width: 18px;
+      height: 28px;
+      border: 1.5px solid rgba(255, 255, 255, 0.4);
+      border-radius: 12px;
+      position: relative;
+      display: flex;
+      justify-content: center;
+    }
+
+    .scroll-wheel {
+      width: 3px;
+      height: 6px;
+      background-color: #f472b6;
+      border-radius: 2px;
+      margin-top: 5px;
+      animation: wheelBounce 1.8s infinite ease-in-out;
+    }
+
+    @keyframes wheelBounce {
+      0% { opacity: 0; transform: translateY(0); }
+      30% { opacity: 1; }
+      100% { opacity: 0; transform: translateY(10px); }
+    }
+
+    /* Glowing Pulse Dot */
+    .pulse-dot {
+      display: inline-block;
+      width: 6px;
+      height: 6px;
+      border-radius: 50%;
+      background-color: #f472b6;
+      box-shadow: 0 0 10px #f472b6, 0 0 20px rgba(244, 114, 182, 0.8);
+      margin-right: 8px;
+      animation: pulseAnim 2.2s infinite ease-in-out;
+    }
+
+    @keyframes pulseAnim {
+      0%, 100% { opacity: 0.5; transform: scale(0.9); }
+      50% { opacity: 1; transform: scale(1.35); }
+    }
+
+    /* Section 2: The Sanctuary */
+    .sanctuary-stage .stage-inner {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      align-items: center;
+      gap: clamp(32px, 5vw, 72px);
+    }
+
+    .split-left-blank {
+      width: 100%;
+      aspect-ratio: 4 / 4.8;
+      pointer-events: none;
+    }
+
+    .split-content {
+      display: flex;
+      flex-direction: column;
+      align-items: flex-start;
+      max-width: 520px;
+      text-shadow: 0 4px 30px rgba(0, 0, 0, 0.95);
+    }
+
+    .split-headline {
+      font-size: clamp(28px, 3.8vw, 56px);
+      font-weight: 700;
+      line-height: 1.08;
+      letter-spacing: -0.025em;
+      color: #FFFFFF;
+      margin-bottom: 20px;
+    }
+
+    .split-subheadline {
+      font-size: clamp(14px, 1.25vw, 18px);
+      font-weight: 400;
+      line-height: 1.55;
+      color: rgba(255, 255, 255, 0.9);
+      margin-bottom: 32px;
+    }
+
+    .outline-pill-btn {
+      position: relative;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      padding: clamp(11px, 1vw, 14px) clamp(22px, 1.8vw, 28px);
+      border-radius: 9999px;
+      border: 1px solid rgba(255, 255, 255, 0.4);
+      background: rgba(10, 10, 10, 0.4);
+      backdrop-filter: blur(14px);
+      -webkit-backdrop-filter: blur(14px);
+      color: #FFFFFF;
+      text-decoration: none;
+      font-family: 'DM Sans', sans-serif;
+      font-size: clamp(12px, 1.05vw, 15px);
+      font-weight: 500;
+      cursor: pointer;
+      transition: all 0.25s cubic-bezier(0.16, 1, 0.3, 1);
+      box-shadow: 0 4px 20px rgba(0, 0, 0, 0.4);
+    }
+
+    .outline-pill-btn:hover {
+      background-color: rgba(255, 255, 255, 0.15);
+      border-color: rgba(255, 255, 255, 0.85);
+      transform: translateY(-2px);
+      box-shadow: 0 8px 30px rgba(255, 255, 255, 0.18);
+    }
+
+    /* Section 3: The Voyage */
+    .voyage-stage .stage-inner {
+      display: flex;
+      align-items: center;
+      justify-content: flex-end;
+    }
+
+    .voyage-content {
+      display: flex;
+      flex-direction: column;
+      align-items: flex-start;
+      max-width: 440px;
+      width: 100%;
+      text-shadow: 0 4px 30px rgba(0, 0, 0, 0.95);
+    }
+
+    .voyage-eyebrow {
+      display: flex;
+      align-items: center;
+      font-size: clamp(11px, 0.85vw, 12px);
+      font-weight: 500;
+      text-transform: uppercase;
+      letter-spacing: 0.18em;
+      color: rgba(255, 255, 255, 0.8);
+      margin-bottom: 14px;
+    }
+
+    .voyage-headline {
+      font-size: clamp(28px, 3.2vw, 46px);
+      font-weight: 700;
+      line-height: 1.1;
+      letter-spacing: -0.025em;
+      color: #FFFFFF;
+      margin-bottom: 18px;
+    }
+
+    .voyage-subheadline {
+      font-size: 15px;
+      font-weight: 400;
+      line-height: 1.6;
+      color: rgba(255, 255, 255, 0.85);
+      max-width: 390px;
+      margin-bottom: 26px;
+    }
+
+    .voyage-cta {
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      font-size: clamp(13px, 1.05vw, 15px);
+      font-weight: 700;
+      color: #FFFFFF;
+      text-decoration: none;
+      cursor: pointer;
+      transition: opacity 0.2s ease, transform 0.2s ease;
+    }
+
+    .voyage-cta span {
+      display: inline-block;
+      transition: transform 0.25s cubic-bezier(0.16, 1, 0.3, 1);
+    }
+
+    .voyage-cta:hover {
+      opacity: 0.9;
+      transform: translateX(2px);
+    }
+
+    .voyage-cta:hover span {
+      transform: translateX(6px);
+    }
+
+    /* Section 4: Plan Your Visit & Minimalist Footer */
+    .visit-stage .stage-inner {
+      display: flex;
+      flex-direction: column;
+      justify-content: space-between;
+      height: 100%;
+    }
+
+    .visit-content {
+      max-width: 500px;
+      width: 100%;
+      display: flex;
+      flex-direction: column;
+      align-items: flex-start;
+      text-shadow: 0 4px 30px rgba(0, 0, 0, 0.95);
+      margin-top: clamp(20px, 4vh, 40px);
+    }
+
+    .visit-eyebrow {
+      display: flex;
+      align-items: center;
+      font-size: clamp(11px, 0.85vw, 12px);
+      font-weight: 500;
+      text-transform: uppercase;
+      letter-spacing: 0.18em;
+      color: rgba(255, 255, 255, 0.8);
+      margin-bottom: 14px;
+    }
+
+    .visit-headline {
+      font-size: clamp(30px, 3.8vw, 54px);
+      font-weight: 700;
+      line-height: 1.08;
+      letter-spacing: -0.025em;
+      color: #FFFFFF;
+      margin-bottom: 18px;
+    }
+
+    .visit-subheadline {
+      font-size: clamp(14px, 1.15vw, 16px);
+      font-weight: 400;
+      line-height: 1.55;
+      color: rgba(255, 255, 255, 0.88);
+      margin-bottom: 30px;
+    }
+
+    .visit-actions {
+      display: flex;
+      flex-wrap: wrap;
+      align-items: center;
+      gap: 14px;
+    }
+
+    .visit-btn-primary {
+      position: relative;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      gap: 8px;
+      background-color: #FFFFFF;
+      color: #000000;
+      text-decoration: none;
+      font-family: 'DM Sans', sans-serif;
+      font-size: clamp(13px, 1.05vw, 15px);
+      font-weight: 700;
+      padding: clamp(12px, 1.1vw, 15px) clamp(22px, 1.8vw, 28px);
+      border-radius: 9999px;
+      border: 1px solid #FFFFFF;
+      cursor: pointer;
+      overflow: hidden;
+      box-shadow: 0 6px 24px rgba(0, 0, 0, 0.5), 0 0 25px rgba(255, 255, 255, 0.2);
+      transition: transform 0.25s cubic-bezier(0.16, 1, 0.3, 1), box-shadow 0.25s ease;
+    }
+
+    .visit-btn-primary::after {
+      content: '';
+      position: absolute;
+      top: -50%;
+      left: -60%;
+      width: 40%;
+      height: 200%;
+      background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.6), transparent);
+      transform: rotate(25deg);
+    }
+
+    .visit-btn-primary:hover {
+      transform: translateY(-2px) scale(1.02);
+      box-shadow: 0 10px 30px rgba(0, 0, 0, 0.7), 0 0 35px rgba(255, 255, 255, 0.4);
+    }
+
+    .visit-btn-primary:hover::after {
+      left: 150%;
+      transition: left 0.75s ease-in-out;
+    }
+
+    .visit-btn-secondary {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      background: rgba(10, 10, 10, 0.4);
+      backdrop-filter: blur(14px);
+      -webkit-backdrop-filter: blur(14px);
+      color: #FFFFFF;
+      text-decoration: none;
+      font-family: 'DM Sans', sans-serif;
+      font-size: clamp(13px, 1.05vw, 15px);
+      font-weight: 500;
+      padding: clamp(12px, 1.1vw, 15px) clamp(22px, 1.8vw, 28px);
+      border-radius: 9999px;
+      border: 1px solid rgba(255, 255, 255, 0.35);
+      cursor: pointer;
+      transition: all 0.25s cubic-bezier(0.16, 1, 0.3, 1);
+    }
+
+    .visit-btn-secondary:hover {
+      background-color: rgba(255, 255, 255, 0.15);
+      border-color: rgba(255, 255, 255, 0.8);
+      transform: translateY(-2px);
+    }
+
+    .visit-footer {
+      width: 100%;
+      padding: 24px 0 0;
+      border-top: 1px solid rgba(255, 255, 255, 0.14);
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 16px;
+      font-size: clamp(12px, 0.9vw, 13px);
+      font-weight: 400;
+      color: rgba(255, 255, 255, 0.72);
+      margin-top: 40px;
+    }
+
+    /* Responsive adjustments */
+    @media (max-width: 820px) {
+      .navbar {
+        padding: 20px 16px;
+      }
+
+      .side-hud {
+        display: none;
+      }
+
+      .hero {
+        max-width: 100%;
+      }
+
+      .sanctuary-stage .stage-inner {
+        grid-template-columns: 1fr;
+        gap: 24px;
+      }
+
+      .split-left-blank {
+        display: none;
+      }
+
+      .split-content {
+        max-width: 100%;
+      }
+
+      .desktop-br {
+        display: none;
+      }
+
+      .voyage-stage .stage-inner {
+        justify-content: flex-start;
+      }
+
+      .visit-footer {
+        flex-wrap: wrap;
+      }
+    }
+  </style>
+</head>
+<body>
+  <!-- Fixed Background 3D Sequence Canvas -->
+  <canvas id="sequence-canvas"></canvas>
+
+  <!-- Interactive Bioluminescent Cursor Lighting -->
+  <div id="cursor-glow"></div>
+
+  <!-- Physical Scroll Driver -->
+  <div id="scroll-track"></div>
+
+  <!-- Fixed Top Header Navigation -->
+  <header class="navbar">
+    <a href="#" class="logo" id="logo-btn">Padda Bil</a>
+    <nav class="glass-bar" aria-label="Primary Navigation">
+      <ul class="nav-links">
+        <li><a href="#sanctuary" class="nav-jump" data-target="0.38">Sanctuary</a></li>
+        <li><a href="#voyage" class="nav-jump" data-target="0.70">Boat Rides</a></li>
+        <li><a href="#visit" class="nav-jump" data-target="0.98">Visit</a></li>
+      </ul>
+      <span class="glass-divider" aria-hidden="true"></span>
+      <div class="social-icons">
+        <!-- Instagram -->
+        <a href="https://www.instagram.com/shuvro_tp?bqrl=Y2FzbHZ2M3hwOHJ6" target="_blank" rel="noopener noreferrer" aria-label="Instagram">
+          <svg viewBox="0 0 24 24" fill="none" stroke="#FFFFFF" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
+            <rect x="2" y="2" width="20" height="20" rx="5" ry="5"></rect>
+            <circle cx="12" cy="12" r="4.2"></circle>
+            <circle cx="17.5" cy="6.5" r="1" fill="#FFFFFF" stroke="none"></circle>
+          </svg>
+        </a>
+        <!-- X / Twitter -->
+        <a href="https://x.com/Shuvro_47" target="_blank" rel="noopener noreferrer" aria-label="X (Twitter)">
+          <svg viewBox="0 0 24 24" fill="#FFFFFF">
+            <path d="M18.244 2.25h3.308l-7.227 8.26 8.502 11.24H16.17l-5.214-6.817L4.99 21.75H1.68l7.73-8.835L1.254 2.25H8.08l4.713 6.231zm-1.161 17.52h1.833L7.084 4.126H5.117z"/>
+          </svg>
+        </a>
+        <!-- Facebook -->
+        <a href="https://www.facebook.com/share/14xpnimMqSr/" target="_blank" rel="noopener noreferrer" aria-label="Facebook">
+          <svg viewBox="0 0 24 24" fill="#FFFFFF">
+            <path d="M12 2C6.477 2 2 6.477 2 12c0 4.991 3.657 9.128 8.438 9.879V14.89h-2.54V12h2.54V9.797c0-2.506 1.492-3.89 3.777-3.89 1.094 0 2.238.195 2.238.195v2.46h-1.26c-1.243 0-1.63.771-1.63 1.562V12h2.773l-.443 2.89h-2.33v6.989C18.343 21.129 22 16.99 22 12c0-5.523-4.477-10-10-10z"/>
+          </svg>
+        </a>
+      </div>
+    </nav>
+  </header>
+
+  <!-- Minimalist Side HUD Navigator -->
+  <nav class="side-hud" aria-label="Scene Navigator">
+    <button class="hud-item active" data-target="0" aria-label="Hero">
+      <span class="hud-label">01 Bloom</span>
+      <span class="hud-dot"></span>
+    </button>
+    <button class="hud-item" data-target="0.38" aria-label="Sanctuary">
+      <span class="hud-label">02 Sanctuary</span>
+      <span class="hud-dot"></span>
+    </button>
+    <button class="hud-item" data-target="0.70" aria-label="The Voyage">
+      <span class="hud-label">03 Voyage</span>
+      <span class="hud-dot"></span>
+    </button>
+    <button class="hud-item" data-target="0.98" aria-label="Plan Your Visit">
+      <span class="hud-label">04 Visit</span>
+      <span class="hud-dot"></span>
+    </button>
+  </nav>
+
+  <!-- Fixed Scrollytelling Stage Containers -->
+  <div class="stages-container">
+    <!-- Stage 1: Hero Banner -->
+    <section class="stage-section hero-stage active" id="stage-0">
+      <div class="stage-inner">
+        <div class="hero">
+          <h1 class="headline">Drift Into Padda Bil</h1>
+          <p class="subheadline">
+            Guided by local boatmen through Terokhada’s untouched lotus waters—built for quiet mornings, drifting wooden noukas, and dawn stories worth keeping.
+          </p>
+          <a href="#sanctuary" class="cta-btn nav-jump" data-target="0.38">
+            Explore the Bil
+            <svg viewBox="0 0 24 24" fill="none" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+              <line x1="5" y1="12" x2="19" y2="12"></line>
+              <polyline points="12 5 19 12 12 19"></polyline>
+            </svg>
+          </a>
+        </div>
+
+        <div class="scroll-hint" id="scroll-hint">
+          <div class="scroll-mouse">
+            <div class="scroll-wheel"></div>
+          </div>
+          <span>Scroll to explore</span>
+        </div>
+      </div>
+    </section>
+
+    <!-- Stage 2: The Sanctuary -->
+    <section class="stage-section sanctuary-stage" id="stage-1">
+      <div class="stage-inner">
+        <div class="split-left-blank" aria-hidden="true"></div>
+        <div class="split-content">
+          <h2 class="split-headline">Awaken with the<br />blooming waters.</h2>
+          <p class="split-subheadline">
+            From dawn mist to endless pink lotuses.<br class="desktop-br" />
+            Discover Terokhada’s hidden wetland sanctuary.
+          </p>
+          <a href="#voyage" class="outline-pill-btn nav-jump" data-target="0.70">Explore the sanctuary</a>
+        </div>
+      </div>
+    </section>
+
+    <!-- Stage 3: The Voyage -->
+    <section class="stage-section voyage-stage" id="stage-2">
+      <div class="stage-inner">
+        <div class="voyage-content">
+          <span class="voyage-eyebrow"><span class="pulse-dot"></span>THE VOYAGE</span>
+          <h2 class="voyage-headline">Silent trails through<br />living water.</h2>
+          <p class="voyage-subheadline">
+            Hand-carved wooden noukas guided by weathered bamboo poles—parting the lotus beds without a sound.
+          </p>
+          <a href="#visit" class="voyage-cta nav-jump" data-target="0.98">Explore the route <span>→</span></a>
+        </div>
+      </div>
+    </section>
+
+    <!-- Stage 4: Plan Your Visit & Minimalist Footer -->
+    <section class="stage-section visit-stage" id="stage-3">
+      <div class="stage-inner">
+        <div class="visit-content">
+          <span class="visit-eyebrow"><span class="pulse-dot"></span>PLAN YOUR VISIT</span>
+          <h2 class="visit-headline">Your morning on<br />Padda Bil awaits.</h2>
+          <p class="visit-subheadline">
+            Terokhada, Khulna • Best experienced between 5:30 AM and 8:30 AM from August to October.
+          </p>
+          <div class="visit-actions">
+            <a href="#" class="visit-btn-primary">Get Directions <span>→</span></a>
+            <a href="#" class="visit-btn-secondary">Visitor Guide</a>
+          </div>
+        </div>
+
+        <footer class="visit-footer">
+          <span>Padda Bil • Terokhada, Khulna</span>
+          <span>© Copyright reserved to Shuvro Ghosh</span>
+        </footer>
+      </div>
+    </section>
+  </div>
+
+  <!-- High-Performance Scrollytelling Animation Engine -->
+  <script>
+    (function () {
+      const TOTAL_FRAMES = 663;
+      const CLIP1_COUNT = 300;
+      const CLIP2_COUNT = 300;
+      const CLIP3_COUNT = 63;
+      const LERP_FACTOR = 0.1;
+
+      let currentFrame = 0;
+      let targetProgress = 0;
+      let currentProgress = 0;
+      let scrollPosition = window.scrollY || 0;
+      let lastRenderedIndex = -1;
+
+      const images = new Array(TOTAL_FRAMES);
+      const isLoaded = new Array(TOTAL_FRAMES).fill(false);
+
+      function getFrameUrl(index) {
+        if (index < CLIP1_COUNT) {
+          const num = String(index + 1).padStart(3, '0');
+          return `frames/clip1/ezgif-frame-${num}.jpg`;
+        } else if (index < CLIP1_COUNT + CLIP2_COUNT) {
+          const num = String(index - CLIP1_COUNT + 1).padStart(3, '0');
+          return `frames/clip2/ezgif-frame-${num}.jpg`;
+        } else {
+          const num = String(index - (CLIP1_COUNT + CLIP2_COUNT) + 1).padStart(3, '0');
+          return `frames/clip3/ezgif-frame-${num}.jpg`;
+        }
+      }
+
+      const canvas = document.getElementById('sequence-canvas');
+      const ctx = canvas.getContext('2d', { alpha: false });
+
+      function resizeCanvas() {
+        const dpr = Math.min(window.devicePixelRatio || 1, 2);
+        canvas.width = Math.round(window.innerWidth * dpr);
+        canvas.height = Math.round(window.innerHeight * dpr);
+        render();
+      }
+
+      window.addEventListener('resize', resizeCanvas);
+
+      function drawCover(img) {
+        if (!img || !img.complete || img.naturalWidth === 0) return;
+        const cw = canvas.width;
+        const ch = canvas.height;
+        const iw = img.naturalWidth;
+        const ih = img.naturalHeight;
+
+        const scale = Math.max(cw / iw, ch / ih);
+        const dw = iw * scale;
+        const dh = ih * scale;
+        const dx = (cw - dw) * 0.5;
+        const dy = (ch - dh) * 0.5;
+
+        ctx.fillStyle = '#000000';
+        ctx.fillRect(0, 0, cw, ch);
+        ctx.drawImage(img, dx, dy, dw, dh);
+      }
+
+      function findNearestLoaded(target) {
+        if (isLoaded[target] && images[target]) return target;
+        for (let d = 1; d < TOTAL_FRAMES; d++) {
+          const down = target - d;
+          if (down >= 0 && isLoaded[down] && images[down]) return down;
+          const up = target + d;
+          if (up < TOTAL_FRAMES && isLoaded[up] && images[up]) return up;
+        }
+        return -1;
+      }
+
+      function render() {
+        const target = Math.max(0, Math.min(TOTAL_FRAMES - 1, Math.round(currentFrame)));
+        const frameIdx = findNearestLoaded(target);
+        if (frameIdx >= 0 && images[frameIdx]) {
+          drawCover(images[frameIdx]);
+          lastRenderedIndex = frameIdx;
+        }
+      }
+
+      function loadSingle(i) {
+        if (i < 0 || i >= TOTAL_FRAMES || images[i]) return;
+        const img = new Image();
+        img.src = getFrameUrl(i);
+        images[i] = img;
+        img.onload = () => {
+          isLoaded[i] = true;
+          const cur = Math.round(currentFrame);
+          if (Math.abs(cur - i) <= 1 || lastRenderedIndex === -1) {
+            render();
+          }
+        };
+      }
+
+      function requestWindow(center, radius = 50) {
+        const start = Math.max(0, center - radius);
+        const end = Math.min(TOTAL_FRAMES - 1, center + radius);
+        for (let i = start; i <= end; i++) {
+          loadSingle(i);
+        }
+      }
+
+      function getMaxScroll() {
+        return Math.max(1, document.documentElement.scrollHeight - window.innerHeight);
+      }
+
+      function syncProgressFromScroll() {
+        scrollPosition = window.scrollY;
+        targetProgress = Math.max(0, Math.min(1, scrollPosition / getMaxScroll()));
+      }
+
+      window.addEventListener('scroll', syncProgressFromScroll, { passive: true });
+
+      // Stage Transitions Configuration
+      const stages = [
+        document.getElementById('stage-0'),
+        document.getElementById('stage-1'),
+        document.getElementById('stage-2'),
+        document.getElementById('stage-3')
+      ];
+
+      const scrollHint = document.getElementById('scroll-hint');
+      const hudItems = document.querySelectorAll('.hud-item');
+
+      function calculateStageStyle(p, inStart, inEnd, outStart, outEnd) {
+        if (p < inStart) return { opacity: 0, y: 35, active: false };
+        if (p < inEnd) {
+          const t = (p - inStart) / (inEnd - inStart);
+          const ease = t * t * (3 - 2 * t);
+          return { opacity: ease, y: (1 - ease) * 35, active: ease > 0.05 };
+        }
+        if (p <= outStart) return { opacity: 1, y: 0, active: true };
+        if (p < outEnd) {
+          const t = (p - outStart) / (outEnd - outStart);
+          const ease = t * t * (3 - 2 * t);
+          return { opacity: 1 - ease, y: -ease * 35, active: (1 - ease) > 0.05 };
+        }
+        return { opacity: 0, y: -35, active: false };
+      }
+
+      function updateStageTransitions(p) {
+        // Stage 0: Hero (0.0 to 0.22)
+        const s0 = calculateStageStyle(p, -0.05, 0.0, 0.12, 0.24);
+        applyStage(stages[0], s0);
+
+        // Stage 1: Sanctuary (0.24 to 0.50)
+        const s1 = calculateStageStyle(p, 0.22, 0.34, 0.46, 0.56);
+        applyStage(stages[1], s1);
+
+        // Stage 2: The Voyage (0.54 to 0.78)
+        const s2 = calculateStageStyle(p, 0.54, 0.64, 0.74, 0.84);
+        applyStage(stages[2], s2);
+
+        // Stage 3: Plan Your Visit & Footer (0.82 to 1.0)
+        const s3 = calculateStageStyle(p, 0.82, 0.92, 1.05, 1.15);
+        applyStage(stages[3], s3);
+
+        // Scroll hint fade
+        if (scrollHint) {
+          scrollHint.style.opacity = Math.max(0, 1 - p * 8);
+        }
+
+        // Update Side HUD active dot
+        let activeIdx = 0;
+        if (p >= 0.82) activeIdx = 3;
+        else if (p >= 0.54) activeIdx = 2;
+        else if (p >= 0.22) activeIdx = 1;
+
+        hudItems.forEach((btn, idx) => {
+          btn.classList.toggle('active', idx === activeIdx);
+        });
+      }
+
+      function applyStage(el, state) {
+        if (!el) return;
+        el.style.opacity = state.opacity.toFixed(3);
+        el.style.transform = `translateY(${state.y.toFixed(1)}px)`;
+        if (state.active) {
+          el.classList.add('active');
+        } else {
+          el.classList.remove('active');
+        }
+      }
+
+      // Smooth Jump Navigation
+      function smoothScrollToProgress(targetP) {
+        const maxScroll = getMaxScroll();
+        const destY = targetP * maxScroll;
+        window.scrollTo({
+          top: destY,
+          behavior: 'smooth'
+        });
+      }
+
+      document.querySelectorAll('.nav-jump, .hud-item').forEach(el => {
+        el.addEventListener('click', (e) => {
+          e.preventDefault();
+          const target = parseFloat(el.getAttribute('data-target'));
+          if (!isNaN(target)) {
+            smoothScrollToProgress(target);
+          }
+        });
+      });
+
+      const logoBtn = document.getElementById('logo-btn');
+      if (logoBtn) {
+        logoBtn.addEventListener('click', (e) => {
+          e.preventDefault();
+          smoothScrollToProgress(0);
+        });
+      }
+
+      // Interactive Bioluminescent Cursor Follower
+      const glow = document.getElementById('cursor-glow');
+      let targetGlowX = window.innerWidth / 2;
+      let targetGlowY = window.innerHeight / 2;
+      let curGlowX = targetGlowX;
+      let curGlowY = targetGlowY;
+
+      window.addEventListener('pointermove', (e) => {
+        targetGlowX = e.clientX;
+        targetGlowY = e.clientY;
+      }, { passive: true });
+
+      // Continuous RAF render loop with inertia
+      function animate() {
+        // Frame interpolation
+        const targetFrame = targetProgress * (TOTAL_FRAMES - 1);
+        const diff = targetFrame - currentFrame;
+
+        if (Math.abs(diff) > 0.005) {
+          currentFrame += diff * LERP_FACTOR;
+          render();
+          requestWindow(Math.round(currentFrame));
+        } else if (currentFrame !== targetFrame) {
+          currentFrame = targetFrame;
+          render();
+          requestWindow(Math.round(currentFrame));
+        }
+
+        // Progress interpolation for liquid stage transitions
+        currentProgress += (targetProgress - currentProgress) * LERP_FACTOR;
+        updateStageTransitions(currentProgress);
+
+        // Cursor bioluminescence smoothing
+        curGlowX += (targetGlowX - curGlowX) * 0.08;
+        curGlowY += (targetGlowY - curGlowY) * 0.08;
+        if (glow) {
+          glow.style.background = `radial-gradient(650px circle at ${curGlowX.toFixed(1)}px ${curGlowY.toFixed(1)}px, rgba(244, 114, 182, 0.07), rgba(52, 211, 153, 0.02) 40%, transparent 70%)`;
+        }
+
+        requestAnimationFrame(animate);
+      }
+
+      // Initialize
+      resizeCanvas();
+      syncProgressFromScroll();
+      currentProgress = targetProgress;
+      updateStageTransitions(currentProgress);
+
+      // Seed initial batch of frames immediately
+      for (let i = 0; i < Math.min(60, TOTAL_FRAMES); i++) {
+        loadSingle(i);
+      }
+
+      // Background progressive streaming for remaining frames
+      let nextBatch = 60;
+      function loadMore() {
+        const end = Math.min(TOTAL_FRAMES, nextBatch + 30);
+        for (let i = nextBatch; i < end; i++) {
+          loadSingle(i);
+        }
+        nextBatch = end;
+        if (nextBatch < TOTAL_FRAMES) {
+          setTimeout(loadMore, 30);
+        }
+      }
+      setTimeout(loadMore, 50);
+
+      requestAnimationFrame(animate);
+    })();
+  </script>
+</body>
+</html>
